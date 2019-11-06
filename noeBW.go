@@ -33,6 +33,7 @@ func main() {
 	loadedImage, err := png.Decode(existingImageFile)
 	if err != nil {
 		// Handle error
+		//add com
 	}
 	fmt.Println(loadedImage)
 	//Gris = 0,2125 * Rouge + 0,7154 * Vert + 0,0721 * Bleu
