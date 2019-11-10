@@ -38,13 +38,13 @@ func main() {
 	myImage := image.NewRGBA(loadedImage.Bounds())
 	//imgNbPix := imgHeight * imgWidth
 	for cpt := 0; cpt < imgWidth; cpt++ {
-		for cpt2:= 0;  cpt2< imgHeight; cpt2++ {
-			red, gr, bck, _ b:=loadedImage.At(cpt, cpt2).RGBA()
+		for cpt2 := 0; cpt2 < imgHeight; cpt2++ {
+			red, gr, bck, _ := loadedImage.At(cpt, cpt2).RGBA()
 
-			gris := uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535 ) + 0.0721*float32(bck*255/65535))
+			gris := uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(bck*255/65535))
 			//fmt.Println(red, gr, bck, alpha)
 			//fmt.Println(gris)
-			myImage.Set(cpt, cpt2, color.RGBA{gris, gris ,gris, 255} )
+			myImage.Set(cpt, cpt2, color.RGBA{gris, gris, gris, 255})
 		}
 	}
 	// outputFile is a File type which satisfies Writer interface
@@ -60,4 +60,3 @@ func main() {
 	outputFile.Close()
 
 }
-
