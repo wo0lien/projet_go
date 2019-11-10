@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./uint32slice"
 	"fmt"
 	"image"
 	"image/color"
@@ -12,7 +13,7 @@ import (
 
 func main() {
 	// Read image from file that already existsqss
-	existingImageFile, err := os.Open("IMG.jpg")
+	existingImageFile, err := os.Open("couleurs.jpg")
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -31,15 +32,27 @@ func main() {
 	imgWidth := b.Max.X
 	imgHeight := b.Max.Y
 	myImage := image.NewRGBA(loadedImage.Bounds())
-	for cpt := 0; cpt < imgWidth; cpt++ {
-		for cpt2 := 0; cpt2 < imgHeight; cpt2++ {
-			red, gr, blue, _ := loadedImage.At(cpt, cpt2).RGBA()
-			gris := uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(blue*255/65535))
-			myImage.Set(cpt, cpt2, color.RGBA{gris, gris, gris, 255})
+	var red = make([]uint32, 9)
+	var green = make([]uint32, 9)
+	var blue = make([]uint32, 9)
+
+	for cpt := 1; cpt < imgWidth-1; cpt++ {
+		for cpt2 := 1; cpt2 < imgHeight-1; cpt2++ {
+			i := 0
+			for cptwi := -1; cptwi < 2; cptwi++ {
+				for cpthe := -1; cpthe < 2; cpthe++ {
+					red[i], green[i], blue[i], _ = loadedImage.At(cpt+cptwi, cpt+cpthe).RGBA()
+				}
+			}
+			uint32slice.SortUint32s(red)
+			uint32slice.SortUint32s(green)
+			uint32slice.SortUint32s(blue)
+			fmt.Println(uint8(red[4]*255/65535), uint8(green[4]*255/65535), uint8(blue[4]*255/65535))
+			myImage.Set(cpt, cpt2, color.RGBA{uint8(red[4] * 255 / 65535), uint8(green[4] * 255 / 65535), uint8(blue[4] * 255 / 65535), 255})
 		}
 	}
 	// outputFile is a File type which satisfies Writer interface
-	outputFile, err := os.Create("imgbw.png")
+	outputFile, err := os.Create("imgmed.png")
 	if err != nil {
 		// Handle error
 	}

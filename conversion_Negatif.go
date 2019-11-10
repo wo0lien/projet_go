@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// Read image from file that already existsqss
-	existingImageFile, err := os.Open("IMG.jpg")
+	existingImageFile, err := os.Open("img.jpg")
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -34,12 +34,11 @@ func main() {
 	for cpt := 0; cpt < imgWidth; cpt++ {
 		for cpt2 := 0; cpt2 < imgHeight; cpt2++ {
 			red, gr, blue, _ := loadedImage.At(cpt, cpt2).RGBA()
-			gris := uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(blue*255/65535))
-			myImage.Set(cpt, cpt2, color.RGBA{gris, gris, gris, 255})
+			myImage.Set(cpt, cpt2, color.RGBA{uint8(255 - (red * 255 / 65535)), uint8(255 - (gr * 255 / 65535)), uint8(255 - (blue * 255 / 65535)), 255})
 		}
 	}
 	// outputFile is a File type which satisfies Writer interface
-	outputFile, err := os.Create("imgbw.png")
+	outputFile, err := os.Create("imgneg.png")
 	if err != nil {
 		// Handle error
 	}
