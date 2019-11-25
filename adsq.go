@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Read image from file that already existsqss
-	existingImageFile, err := os.Open("bruit2.jpg")
+	existingImageFile, err := os.Open("hubble_lite.png")
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -32,27 +32,24 @@ func main() {
 	imgWidth := b.Max.X
 	imgHeight := b.Max.Y
 	myImage := image.NewRGBA(loadedImage.Bounds())
-	var red = make([]uint32, 49)
-	var green = make([]uint32, 49)
-	var blue = make([]uint32, 49)
+	var red = make([]uint32, 9)
+	var green = make([]uint32, 9)
+	var blue = make([]uint32, 9)
 
-	for cpt := 3; cpt < imgWidth-3; cpt++ {
-		for cpt2 := 3; cpt2 < imgHeight-3; cpt2++ {
-			i := 0
-			for cptwi := -3; cptwi < 4; cptwi++ {
-				for cpthe := -3; cpthe < 4; cpthe++ {
-					red[i], green[i], blue[i], _ = loadedImage.At(cpt+cptwi, cpt2+cpthe).RGBA()
-					i++
-				}
-			}
-			uint32slice.SortUint32s(red)
-			uint32slice.SortUint32s(green)
-			uint32slice.SortUint32s(blue)
-			//fmt.Println(red[4], uint8(green[4]*255/65535), uint8(blue[4]*255/65535))
-			valrouge,valvert,valbleu:=uint8(red[4] * 255 / 65535), uint8(green[4] * 255 / 65535), uint8(blue[4] * 255 / 65535)
-			myImage.Set(cpt, cpt2, color.RGBA{valrouge,valvert,valbleu, 255})
+
+	i := 0
+	for cptwi := -1; cptwi < 2; cptwi++ {
+		for cpthe := -1; cpthe < 2; cpthe++ {
+			red[i], green[i], blue[i], _ = loadedImage.At(imgWidth/2+cptwi, imgHeight/2+cpthe).RGBA()
+			i++
 		}
 	}
+	uint32slice.SortUint32s(red)
+	uint32slice.SortUint32s(green)
+	uint32slice.SortUint32s(blue)
+	fmt.Println(red[4], uint8(green[4]*255/65535), uint8(blue[4]*255/65535))
+	myImage.Set(imgWidth/2, imgHeight/2, color.RGBA{uint8(red[4] * 255 / 65535), uint8(green[4] * 255 / 65535), uint8(blue[4] * 255 / 65535), 255})
+
 	// outputFile is a File type which satisfies Writer interface
 	outputFile, err := os.Create("imgmed.png")
 	if err != nil {
@@ -66,3 +63,4 @@ func main() {
 	outputFile.Close()
 
 }
+
