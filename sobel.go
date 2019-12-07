@@ -32,41 +32,53 @@ func main() {
 	imgWidth := b.Max.X
 	imgHeight := b.Max.Y
 	myImage := image.NewRGBA(loadedImage.Bounds())
-	var maxG float32 = 0
-	gris :=  make([][]uint8, 2)
-	gris[0] = make([]uint8, imgWidth)
-	gris[1] = make([]uint8, imgHeight)
-	gradient :=  make([][]float32, 2)
-	gradient[0] = make([]float32, imgWidth)
-	gradient[1] = make([]float32, imgHeight)
+	var maxG float64 = 0
+	gris := make([][]uint8, imgHeight)
+	for i := range gris {
+		gris[i] = make([]uint8, imgWidth)
+	}
+
+	gradient := make([][]float64, imgHeight)
+	for i := range gradient {
+		gradient[i] = make([]float64, imgWidth)
+	}
 
 	for cpt := 0; cpt < imgWidth; cpt++ {
 		for cpt2 := 0; cpt2 < imgHeight; cpt2++ {
-			red, gr, blue, _ := loadedImage.At(cpt, cpt2).RGBA()
+			red, gr, blue, _ := loadedImage.At(cpt2, cpt).RGBA()
 			gris[cpt][cpt2] = uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(blue*255/65535))
 
 		}
 	}
+	/*int pixval_x =
+	  ( -1* (int)img.at<uchar>(j,i)) + (0* (int)img.at<uchar>(j+1,i)) + (1 * (int)img.at<uchar>(j+2,i)) +
+	  ( -2* (int)img.at<uchar>(j,i+1)) + (0* (int)img.at<uchar>(j+1,i+1)) + (2 * (int)img.at<uchar>(j+2,i+1)) +
+	  ( -1 * (int)img.at<uchar>(j,i+2)) + (0 * (int)img.at<uchar>(j+1,i+2)) + (1 * (int)img.at<uchar>(j+2,i+2));
 
+	  int pixval_y =
+	  (sobel_y[0][0] * (int)newimg.at<uchar>(j,i)) + (sobel_y[0][1] * (int)newimg.at<uchar>(j+1,i)) + (sobel_y[0][2] * (int)newimg.at<uchar>(j+2,i)) +
+	  (sobel_y[1][0] * (int)newimg.at<uchar>(j,i+1)) + (sobel_y[1][1] * (int)newimg.at<uchar>(j+1,i+1)) + (sobel_y[1][2] * (int)newimg.at<uchar>(j+2,i+1)) +
+	  (sobel_y[2][0] * (int)newimg.at<uchar>(j,i+2)) + (sobel_y[2][1] * (int)newimg.at<uchar>(j+1,i+2)) + (sobel_y[2][2] * (int)newimg.at<uchar>(j+2,i+2));*/
 
-	for cpt := 0; cpt < imgWidth; cpt+=3 {
-		for cpt2 := 0; cpt2 < imgHeight; cpt2+=3 {
-			if cpt==0 || cpt== imgWidth-1 || cpt2==0 || cpt2==imgHeight-1 {
-				gradient[cpt][cpt2] = 0
-			} else {
-				gx := gris[cpt+1][cpt2-1] + 2*gris[cpt+1][cpt2] + gris[cpt+1][cpt2+1] - gris[cpt-1][cpt2-1] - 2*gris[cpt-1][cpt2] - gris[cpt-1][cpt2+1]
-				gy := gris[cpt-1][cpt2+1] + 2* gris[cpt][cpt2+1] + gris[cpt+1][cpt2+1] - gris[cpt-1][cpt2-1] - 2*gris[cpt][cpt2-1] - gris[cpt+1][cpt2-1]
-				gradient[cpt][cpt2] = float32(math.Abs(float64(gx))+math.Abs(float64(gy)))
-				if gradient[cpt][cpt2] > maxG {
-					maxG = gradient[cpt][cpt2]
-				}
-
+	for cpt := 0; cpt < imgHeight-2; cpt += 1 {
+		for cpt2 := 0; cpt2 < imgWidth-2; cpt2 += 1 {
+			var gx float64
+			gx = float64(-1*gris[cpt][cpt2] + 1*gris[cpt+2][cpt2] + 1*gris[cpt][cpt2] - 2*gris[cpt][cpt2+1] + 2*gris[cpt+2][cpt2+1] - 1*gris[cpt][cpt2+2] + 1*gris[cpt+2][cpt2+2])
+			//gy := gris[cpt-1][cpt2+1] + 2*gris[cpt][cpt2+1] + gris[cpt+1][cpt2+1] - gris[cpt-1][cpt2-1] - 2*gris[cpt][cpt2-1] - gris[cpt+1][cpt2-1]
+			gradient[cpt][cpt2] = math.Abs(gx) //float32(math.Abs(float64(gx)) + math.Abs(float64(gy)))
+			if gradient[cpt][cpt2] > maxG {
+				maxG = gradient[cpt][cpt2]
 			}
+
 		}
 	}
-	for cpt := 0; cpt < imgWidth; cpt+=3 {
-		for cpt2 := 0; cpt2 < imgHeight; cpt2 += 3 {
-			valsobel := uint8(gradient[cpt][cpt2] * 255 / maxG)
+	for cpt := 0; cpt < imgHeight-2; cpt += 1 {
+		for cpt2 := 0; cpt2 < imgWidth-2; cpt2 += 1 {
+			var valsobel uint8
+			if gradient[cpt][cpt2] > 255 {
+				valsobel = 255
+			}
+			valsobel = uint8(gradient[cpt][cpt2] * 255 / maxG)
 			myImage.Set(cpt, cpt2, color.RGBA{valsobel, valsobel, valsobel, 255})
 		}
 	}
