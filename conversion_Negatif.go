@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func main() {
+func negative() {
 	// Read image from file that already existsqss
 	existingImageFile, err := os.Open("img.jpg")
 	if err != nil {
@@ -26,7 +26,6 @@ func main() {
 		fmt.Println(err)
 	}
 
-	//Gris = 0,2125 * Rouge + 0,7154 * Vert + 0,0721 * Bleu
 	b := loadedImage.Bounds()
 	imgWidth := b.Max.X
 	imgHeight := b.Max.Y

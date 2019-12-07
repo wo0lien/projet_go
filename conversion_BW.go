@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func main() {
+func blackwhite() {
 	// Read image from file that already existsqss
 	existingImageFile, err := os.Open("IMG.jpg")
 	if err != nil {

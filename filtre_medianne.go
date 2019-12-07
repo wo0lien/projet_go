@@ -1,7 +1,6 @@
 package main
 
 import (
-	"./uint32slice"
 	"fmt"
 	"image"
 	"image/color"
@@ -9,9 +8,11 @@ import (
 	"image/png"
 	_ "image/png"
 	"os"
+
+	"./uint32slice"
 )
 
-func main() {
+func mediane_filter() {
 	// Read image from file that already existsqss
 	existingImageFile, err := os.Open("bruit2.jpg")
 	if err != nil {
@@ -27,7 +28,6 @@ func main() {
 		fmt.Println(err)
 	}
 
-	//Gris = 0,2125 * Rouge + 0,7154 * Vert + 0,0721 * Bleu
 	b := loadedImage.Bounds()
 	imgWidth := b.Max.X
 	imgHeight := b.Max.Y
@@ -48,9 +48,8 @@ func main() {
 			uint32slice.SortUint32s(red)
 			uint32slice.SortUint32s(green)
 			uint32slice.SortUint32s(blue)
-			//fmt.Println(red[4], uint8(green[4]*255/65535), uint8(blue[4]*255/65535))
-			valrouge,valvert,valbleu:=uint8(red[4] * 255 / 65535), uint8(green[4] * 255 / 65535), uint8(blue[4] * 255 / 65535)
-			myImage.Set(cpt, cpt2, color.RGBA{valrouge,valvert,valbleu, 255})
+			valrouge, valvert, valbleu := uint8(red[4]*255/65535), uint8(green[4]*255/65535), uint8(blue[4]*255/65535)
+			myImage.Set(cpt, cpt2, color.RGBA{valrouge, valvert, valbleu, 255})
 		}
 	}
 	// outputFile is a File type which satisfies Writer interface

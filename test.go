@@ -21,4 +21,7 @@ func main() {
 
 	}
 	fmt.Println(x)
+	for i := range x {
+		fmt.Println(x[i][i+1])
+	}
 }
