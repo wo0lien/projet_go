@@ -33,9 +33,9 @@ func main() {
 	imgHeight := b.Max.Y
 	myImage := image.NewRGBA(loadedImage.Bounds())
 	var maxG float64 = 0
-	gris := make([][]uint8, imgHeight)
+	gris := make([][]int16, imgHeight)
 	for i := range gris {
-		gris[i] = make([]uint8, imgWidth)
+		gris[i] = make([]int16, imgWidth)
 	}
 
 	gradient := make([][]float64, imgHeight)
@@ -43,10 +43,10 @@ func main() {
 		gradient[i] = make([]float64, imgWidth)
 	}
 
-	for cpt := 0; cpt < imgWidth; cpt++ {
-		for cpt2 := 0; cpt2 < imgHeight; cpt2++ {
+	for cpt := 0; cpt < imgHeight; cpt++ {
+		for cpt2 := 0; cpt2 < imgWidth; cpt2++ {
 			red, gr, blue, _ := loadedImage.At(cpt2, cpt).RGBA()
-			gris[cpt][cpt2] = uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(blue*255/65535))
+			gris[cpt][cpt2] = int16(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(blue*255/65535))
 
 		}
 	}
