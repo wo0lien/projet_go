@@ -1,19 +1,19 @@
 package main
 
 import (
-	"./uint32slice"
 	"fmt"
 	"image"
 	"image/color"
 	_ "image/jpeg"
 	"image/png"
 	_ "image/png"
+	"math"
 	"os"
 )
 
 func main() {
 	// Read image from file that already existsqss
-	existingImageFile, err := os.Open("bruit2.jpg")
+	existingImageFile, err := os.Open("edge.png")
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -32,25 +32,42 @@ func main() {
 	imgWidth := b.Max.X
 	imgHeight := b.Max.Y
 	myImage := image.NewRGBA(loadedImage.Bounds())
-	var red = make([]uint32, 49)
-	var green = make([]uint32, 49)
-	var blue = make([]uint32, 49)
+	var maxG float32 = 0
+	gris :=  make([][]uint8, 2)
+	gris[0] = make([]uint8, imgWidth)
+	gris[1] = make([]uint8, imgHeight)
+	gradient :=  make([][]float32, 2)
+	gradient[0] = make([]float32, imgWidth)
+	gradient[1] = make([]float32, imgHeight)
 
-	for cpt := 3; cpt < imgWidth-3; cpt++ {
-		for cpt2 := 3; cpt2 < imgHeight-3; cpt2++ {
-			i := 0
-			for cptwi := -3; cptwi < 4; cptwi++ {
-				for cpthe := -3; cpthe < 4; cpthe++ {
-					red[i], green[i], blue[i], _ = loadedImage.At(cpt+cptwi, cpt2+cpthe).RGBA()
-					i++
+	for cpt := 0; cpt < imgWidth; cpt++ {
+		for cpt2 := 0; cpt2 < imgHeight; cpt2++ {
+			red, gr, blue, _ := loadedImage.At(cpt, cpt2).RGBA()
+			gris[cpt][cpt2] = uint8(0.2125*float32(red*255/65535) + 0.7154*float32(gr*255/65535) + 0.0721*float32(blue*255/65535))
+
+		}
+	}
+
+
+	for cpt := 0; cpt < imgWidth; cpt+=3 {
+		for cpt2 := 0; cpt2 < imgHeight; cpt2+=3 {
+			if cpt==0 || cpt== imgWidth-1 || cpt2==0 || cpt2==imgHeight-1 {
+				gradient[cpt][cpt2] = 0
+			} else {
+				gx := gris[cpt+1][cpt2-1] + 2*gris[cpt+1][cpt2] + gris[cpt+1][cpt2+1] - gris[cpt-1][cpt2-1] - 2*gris[cpt-1][cpt2] - gris[cpt-1][cpt2+1]
+				gy := gris[cpt-1][cpt2+1] + 2* gris[cpt][cpt2+1] + gris[cpt+1][cpt2+1] - gris[cpt-1][cpt2-1] - 2*gris[cpt][cpt2-1] - gris[cpt+1][cpt2-1]
+				gradient[cpt][cpt2] = float32(math.Abs(float64(gx))+math.Abs(float64(gy)))
+				if gradient[cpt][cpt2] > maxG {
+					maxG = gradient[cpt][cpt2]
 				}
+
 			}
-			uint32slice.SortUint32s(red)
-			uint32slice.SortUint32s(green)
-			uint32slice.SortUint32s(blue)
-			//fmt.Println(red[4], uint8(green[4]*255/65535), uint8(blue[4]*255/65535))
-			valrouge,valvert,valbleu:=uint8(red[4] * 255 / 65535), uint8(green[4] * 255 / 65535), uint8(blue[4] * 255 / 65535)
-			myImage.Set(cpt, cpt2, color.RGBA{valrouge,valvert,valbleu, 255})
+		}
+	}
+	for cpt := 0; cpt < imgWidth; cpt+=3 {
+		for cpt2 := 0; cpt2 < imgHeight; cpt2 += 3 {
+			valsobel := uint8(gradient[cpt][cpt2] * 255 / maxG)
+			myImage.Set(cpt, cpt2, color.RGBA{valsobel, valsobel, valsobel, 255})
 		}
 	}
 	// outputFile is a File type which satisfies Writer interface
