@@ -1,34 +1,16 @@
-package filtre
+package edge
 
 //sobel algo from https://stackoverflow.com/questions/17815687/image-processing-implementing-sobel-filter
 import (
-	"fmt"
 	"image"
 	"image/color"
 	_ "image/jpeg"
-	"image/png"
 	_ "image/png"
 	"math"
-	"os"
 )
 
-func sobel(in, out string) {
-	// Read image from file that already exists
-	existingImageFile, err := os.Open(in)
-	if err != nil {
-		//Handle error
-		fmt.Print(err)
-	}
-	fmt.Println("Succes")
-	defer existingImageFile.Close()
-
-	// Calling the generic image.Decode() will tell give us the data
-	// and type of image it is as a string
-	loadedImage, _, err := image.Decode(existingImageFile)
-	if err != nil {
-		// Handle error
-		fmt.Println(err)
-	}
+func FSobel(in image.Image) image.Image{
+	loadedImage := in
 
 	//Creation of a new image with the same dimensions as the input one
 	b := loadedImage.Bounds()
@@ -76,15 +58,8 @@ func sobel(in, out string) {
 			myImage.Set(cpt2, cpt, color.RGBA{valsobel, valsobel, valsobel, 255})
 		}
 	}
+	return myImage
 
-	// outputFile is a File type which satisfies Writer interface
-	outputFile, err := os.Create(out)
-	if err != nil {
-		// Handle error
-	}
-	// Encode takes a writer interface and an image interface
-	// We pass it the File and the RGBA
-	png.Encode(outputFile, myImage)
-	outputFile.Close()
+
 
 }
